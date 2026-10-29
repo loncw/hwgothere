@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    path { fill: #2b2620; }
+    @media (prefers-color-scheme: dark) { path { fill: #f1ebe2; } }
+  </style>
+  <!-- Stem with a hook at the foot, and the left half of the crossbar -->
+  <path d="M9 3h4.5v18.5c0 2.6 1.3 3.8 3.6 3.8 1 0 1.9-.2 2.6-.5v3.7c-1 .4-2.3.6-3.6.6-4.6 0-7.1-2.4-7.1-7.1V13.2H4.5V9.2H9z"/>
+  <!-- Right half of the crossbar: an arrowhead with curved, swept-back barbs, starting at the crosspoint -->
+  <path d="M13.5 9.2h3.2C16.4 7.4 15.9 5.8 15 4.2 20 6 24.5 8.4 29 11.2 24.5 14 20 16.4 15 18.2c.9-1.6 1.4-3.2 1.7-5H13.5z"/>
+</svg>
