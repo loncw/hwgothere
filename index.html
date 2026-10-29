@@ -6,24 +6,31 @@
   <title>howegothere</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <style>
-    :root { --bg: #f7f2ea; --fg: #2b2620; --muted: #8a7f72; --p: 0; }
+    :root { --bg: #f7f2ea; --fg: #2b2620; --muted: #8a7f72; --line: #e3d9cb; --p: 0; }
     @media (prefers-color-scheme: dark) {
-      :root { --bg: #1c1a17; --fg: #f1ebe2; --muted: #9b9184; }
+      :root { --bg: #1c1a17; --fg: #f1ebe2; --muted: #9b9184; --line: #38332c; }
     }
     * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
     body {
       background: var(--bg); color: var(--fg);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      text-align: center;
+      line-height: 1.55;
     }
-    /* Extra height gives the page room to scroll; the heading stays pinned. */
-    main { height: 200vh; }
-    .stage {
-      position: sticky; top: 0; height: 100vh;
-      display: grid; place-content: center; padding: 16px;
+    .in { max-width: 960px; margin: 0 auto; padding-inline: 16px; }
+
+    /* Header stays pinned so the heading's t can slide as you scroll between the two acts. */
+    header {
+      position: sticky; top: 0; z-index: 10;
+      background: var(--bg); border-bottom: 1px solid transparent;
+      padding-block: 28px 18px;
     }
-    h1 { font-size: clamp(2rem, 7vw, 4rem); font-weight: 600; letter-spacing: -0.02em; white-space: nowrap; }
+    .scrolled header { border-bottom-color: var(--line); }
+    h1 { font-size: clamp(2.2rem, 7vw, 4rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; white-space: nowrap; }
     .dim { color: var(--muted); }
+    .tagline { margin-top: 8px; color: var(--muted); font-size: 1.1rem; }
+
     /* The word break slides from "got here" to "go there" as --p goes 0 → 1. */
     .gap { display: inline-block; width: 0.3em; }
     .gap.before { width: calc(var(--p) * 0.3em); }
@@ -41,30 +48,138 @@
     @media (prefers-reduced-motion: reduce) {
       .at-top .t { animation: none; }
     }
-    p { margin-top: 0.75rem; color: var(--muted); }
+
+    nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    nav a {
+      color: var(--fg); text-decoration: none; font-size: 0.95rem;
+      padding: 8px 16px; border: 1px solid var(--line); border-radius: 999px;
+    }
+    nav a[aria-current="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+    nav a:focus-visible { outline: 2px solid var(--muted); outline-offset: 2px; }
+
+    main section { padding-block: 48px; scroll-margin-top: var(--header-h, 200px); }
+    main section + section { border-top: 1px solid var(--line); }
+    /* Tall enough to scroll up to the header, so the t can finish its slide */
+    #go-there { min-height: calc(100vh - var(--header-h, 200px)); }
+    .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 600; }
+    h2 { font-size: clamp(1.5rem, 3.5vw, 2.2rem); font-weight: 600; letter-spacing: -0.015em; line-height: 1.15; margin-top: 6px; text-wrap: balance; }
+    h3 { font-size: 1.1rem; font-weight: 600; line-height: 1.3; }
+    .intro { margin-top: 10px; color: var(--muted); max-width: 60ch; }
+
+    /* Act one: the past as a timeline */
+    .timeline { list-style: none; padding: 0 0 0 20px; margin-top: 28px; display: grid; gap: 24px; border-left: 2px solid var(--line); }
+    .timeline li { position: relative; display: grid; gap: 2px; }
+    .timeline li::before {
+      content: ""; position: absolute; left: -28px; top: 5px; width: 14px; height: 14px; border-radius: 50%;
+      background: var(--bg); border: 2px solid var(--muted);
+    }
+    .when { font-size: 0.85rem; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+    /* Act two and articles: cards */
+    .cards { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 28px; }
+    .cards > * { min-width: 0; border-top: 2px solid var(--fg); padding-top: 12px; display: grid; gap: 4px; align-content: start; }
+    .cards p { color: var(--muted); }
+
+    [hidden] { display: none !important; }
   </style>
 </head>
 <body>
-  <main>
-    <div class="stage">
+  <header>
+    <div class="in">
       <h1 aria-label="how we got here, how we go there">h<span class="dim">ow</span><span class="gap"></span>w<span class="dim">e</span><span class="gap"></span>go<span class="gap before"></span><span class="t">t</span><span class="gap after"></span>here</h1>
-      <p>Coming soon.</p>
+      <p class="tagline">A plan for Britain.</p>
+      <nav>
+        <a href="#got-here" data-view="story">How we got here</a>
+        <a href="#go-there" data-view="story">How we go there</a>
+        <a href="#articles" data-view="articles">Articles</a>
+      </nav>
     </div>
+  </header>
+
+  <main>
+    <div id="story">
+      <section id="got-here">
+        <div class="in">
+          <p class="label">How we got here</p>
+          <h2>Headline for the story so far</h2>
+          <p class="intro">A sentence or two setting up the problem. Placeholder text until the real content is written.</p>
+          <ol class="timeline">
+            <li><span class="when">Year</span><h3>First turning point</h3><p class="dim">What happened and why it mattered.</p></li>
+            <li><span class="when">Year</span><h3>Second turning point</h3><p class="dim">What happened and why it mattered.</p></li>
+            <li><span class="when">Year</span><h3>Third turning point</h3><p class="dim">What happened and why it mattered.</p></li>
+            <li><span class="when">Today</span><h3>Where things stand now</h3><p class="dim">The situation the plan responds to.</p></li>
+          </ol>
+        </div>
+      </section>
+      <section id="go-there">
+        <div class="in">
+          <p class="label">How we go there</p>
+          <h2>Headline for the plan</h2>
+          <p class="intro">A sentence or two on where we want to get to. Placeholder text until the real content is written.</p>
+          <div class="cards">
+            <div><span class="label">Step one</span><h3>First proposal</h3><p>What it is and what it would change.</p></div>
+            <div><span class="label">Step two</span><h3>Second proposal</h3><p>What it is and what it would change.</p></div>
+            <div><span class="label">Step three</span><h3>Third proposal</h3><p>What it is and what it would change.</p></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section id="articles" hidden>
+      <div class="in">
+        <p class="label">Articles</p>
+        <h2>Articles</h2>
+        <div class="cards">
+          <div><span class="label">Explainer</span><h3>Article title</h3><p>Short summary of the article.</p></div>
+          <div><span class="label">Data</span><h3>Article title</h3><p>Short summary of the article.</p></div>
+          <div><span class="label">Opinion</span><h3>Article title</h3><p>Short summary of the article.</p></div>
+          <div><span class="label">History</span><h3>Article title</h3><p>Short summary of the article.</p></div>
+        </div>
+      </div>
+    </section>
   </main>
+
   <script>
     const root = document.documentElement;
+    const header = document.querySelector('header');
+    const story = document.getElementById('story');
+    const articles = document.getElementById('articles');
+    const goThere = document.getElementById('go-there');
+    const links = document.querySelectorAll('nav a');
     let queued = false;
+
+    function view() { return location.hash === '#articles' ? 'articles' : 'story'; }
+
     function update() {
       queued = false;
-      const p = Math.min(1, Math.max(0, scrollY / (innerHeight * 0.8)));
+      const h = header.offsetHeight;
+      root.style.setProperty('--header-h', h + 'px');
+      let p = 1, current = '#articles';
+      if (view() === 'story') {
+        // t slides as "How we go there" rises from 60% down the screen up to the header
+        const top = goThere.getBoundingClientRect().top - h;
+        p = Math.min(1, Math.max(0, 1 - top / (innerHeight * 0.6)));
+        current = p > 0.5 ? '#go-there' : '#got-here';
+      }
       root.style.setProperty('--p', p);
-      root.classList.toggle('at-top', p === 0);
+      root.classList.toggle('at-top', view() === 'story' && scrollY === 0);
+      root.classList.toggle('scrolled', scrollY > 0);
+      links.forEach(a => a.setAttribute('aria-current', a.getAttribute('href') === current));
     }
+
+    function route() {
+      const v = view();
+      story.hidden = v !== 'story';
+      articles.hidden = v !== 'articles';
+      update();
+    }
+
     addEventListener('scroll', () => {
       if (!queued) { queued = true; requestAnimationFrame(update); }
     }, { passive: true });
     addEventListener('resize', update);
-    update();
+    addEventListener('hashchange', route);
+    route();
   </script>
 </body>
 </html>
