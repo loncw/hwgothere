@@ -24,7 +24,7 @@
     h1 { font-size: clamp(2rem, 7vw, 4rem); font-weight: 600; letter-spacing: -0.02em; white-space: nowrap; }
     .dim { color: var(--muted); }
     /* The word break slides from "got here" to "go there" as --p goes 0 → 1. */
-    .gap { display: inline-block; }
+    .gap { display: inline-block; width: 0.3em; }
     .gap.before { width: calc(var(--p) * 0.3em); }
     .gap.after { width: calc((1 - var(--p)) * 0.3em); }
     p { margin-top: 0.75rem; color: var(--muted); }
@@ -33,7 +33,7 @@
 <body>
   <main>
     <div class="stage">
-      <h1 aria-label="how we got here, how we go there">h<span class="dim">o</span>w<span class="dim">e</span>go<span class="gap before"></span><em>t</em><span class="gap after"></span>here</h1>
+      <h1 aria-label="how we got here, how we go there">h<span class="dim">o</span>w<span class="gap"></span>w<span class="dim">e</span><span class="gap"></span>go<span class="gap before"></span><em>t</em><span class="gap after"></span>here</h1>
       <p>Coming soon.</p>
     </div>
   </main>
