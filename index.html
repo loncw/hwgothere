@@ -80,6 +80,23 @@
     .cards > * { min-width: 0; border-top: 2px solid var(--fg); padding-top: 12px; display: grid; gap: 4px; align-content: start; }
     .cards p { color: var(--muted); }
 
+    /* Contact form */
+    form { display: grid; gap: 18px; margin-top: 28px; max-width: 560px; }
+    label { display: grid; gap: 6px; font-weight: 600; font-size: 0.95rem; }
+    input, textarea {
+      font: inherit; font-weight: 400; color: var(--fg); background: transparent;
+      border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; width: 100%;
+    }
+    textarea { min-height: 160px; resize: vertical; }
+    input:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid var(--muted); outline-offset: 2px; }
+    .trap { position: absolute; left: -9999px; }
+    form button {
+      justify-self: start; font: inherit; cursor: pointer;
+      padding: 10px 22px; border-radius: 999px; border: 1px solid var(--fg); background: var(--fg); color: var(--bg);
+    }
+    form button:disabled { opacity: 0.6; cursor: default; }
+    .status { min-height: 1.5em; color: var(--muted); }
+
     [hidden] { display: none !important; }
   </style>
 </head>
@@ -92,6 +109,7 @@
         <a href="#got-here" data-view="story">How we got here</a>
         <a href="#go-there" data-view="story">How we go there</a>
         <a href="#articles" data-view="articles">Articles</a>
+        <a href="#contact" data-view="contact">Contact</a>
       </nav>
     </div>
   </header>
@@ -137,24 +155,40 @@
         </div>
       </div>
     </section>
+
+    <section id="contact" hidden>
+      <div class="in">
+        <p class="label">Contact</p>
+        <h2>Get in touch</h2>
+        <p class="intro">Questions, ideas or corrections. Send a message and we'll get back to you.</p>
+        <form id="contact-form">
+          <label for="c-name">Name<input id="c-name" name="name" autocomplete="name" required></label>
+          <label for="c-email">Email<input id="c-email" name="email" type="email" autocomplete="email" required></label>
+          <label for="c-message">Message<textarea id="c-message" name="message" required></textarea></label>
+          <input class="trap" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <button type="submit">Send message</button>
+          <p class="status" id="c-status" role="status"></p>
+        </form>
+      </div>
+    </section>
   </main>
 
   <script>
     const root = document.documentElement;
     const header = document.querySelector('header');
     const story = document.getElementById('story');
-    const articles = document.getElementById('articles');
+    const pages = { articles: document.getElementById('articles'), contact: document.getElementById('contact') };
     const goThere = document.getElementById('go-there');
     const links = document.querySelectorAll('nav a');
     let queued = false;
 
-    function view() { return location.hash === '#articles' ? 'articles' : 'story'; }
+    function view() { const v = location.hash.slice(1); return pages[v] ? v : 'story'; }
 
     function update() {
       queued = false;
       const h = header.offsetHeight;
       root.style.setProperty('--header-h', h + 'px');
-      let p = 1, current = '#articles';
+      let p = 1, current = location.hash;
       if (view() === 'story') {
         // t slides as "How we go there" rises from 60% down the screen up to the header
         const top = goThere.getBoundingClientRect().top - h;
@@ -170,7 +204,7 @@
     function route() {
       const v = view();
       story.hidden = v !== 'story';
-      articles.hidden = v !== 'articles';
+      for (const k in pages) pages[k].hidden = v !== k;
       update();
     }
 
@@ -194,6 +228,34 @@
     addEventListener('resize', update);
     addEventListener('popstate', () => go(location.hash));
     route();
+
+    // Messages are delivered by Web3Forms (web3forms.com) to the email the access key was made with.
+    // The key is meant to be public, so it is fine in the page source.
+    const WEB3FORMS_KEY = 'YOUR-ACCESS-KEY';
+    const form = document.getElementById('contact-form');
+    const status = document.getElementById('c-status');
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const button = form.querySelector('button');
+      button.disabled = true;
+      status.textContent = 'Sending…';
+      try {
+        const data = Object.fromEntries(new FormData(form));
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ ...data, botcheck: !!data.botcheck, access_key: WEB3FORMS_KEY, subject: 'New message from hwgothere.com' }),
+        });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.message);
+        form.reset();
+        status.textContent = 'Thanks, your message has been sent.';
+      } catch (err) {
+        status.textContent = "Your message didn't send. Please try again in a moment.";
+      } finally {
+        button.disabled = false;
+      }
+    });
   </script>
 </body>
 </html>
