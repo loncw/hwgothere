@@ -5,26 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>howegothere</title>
   <style>
-    :root { --bg: #f7f2ea; --fg: #2b2620; --muted: #8a7f72; }
+    :root { --bg: #f7f2ea; --fg: #2b2620; --muted: #8a7f72; --p: 0; }
     @media (prefers-color-scheme: dark) {
       :root { --bg: #1c1a17; --fg: #f1ebe2; --muted: #9b9184; }
     }
     * { box-sizing: border-box; margin: 0; }
     body {
-      min-height: 100vh; display: grid; place-items: center;
       background: var(--bg); color: var(--fg);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      padding: 16px; text-align: center;
+      text-align: center;
     }
-    h1 { font-size: clamp(2rem, 7vw, 4rem); font-weight: 600; letter-spacing: -0.02em; }
+    /* Extra height gives the page room to scroll; the heading stays pinned. */
+    main { height: 200vh; }
+    .stage {
+      position: sticky; top: 0; height: 100vh;
+      display: grid; place-content: center; padding: 16px;
+    }
+    h1 { font-size: clamp(2rem, 7vw, 4rem); font-weight: 600; letter-spacing: -0.02em; white-space: nowrap; }
     .dim { color: var(--muted); }
+    /* The word break slides from "got here" to "go there" as --p goes 0 → 1. */
+    .gap { display: inline-block; }
+    .gap.before { width: calc(var(--p) * 0.3em); }
+    .gap.after { width: calc((1 - var(--p)) * 0.3em); }
     p { margin-top: 0.75rem; color: var(--muted); }
   </style>
 </head>
 <body>
   <main>
-    <h1>h<span class="dim">o</span>w<span class="dim">e</span>go<em>t</em>here</h1>
-    <p>Coming soon.</p>
+    <div class="stage">
+      <h1 aria-label="how we got here, how we go there">h<span class="dim">o</span>w<span class="dim">e</span>go<span class="gap before"></span><em>t</em><span class="gap after"></span>here</h1>
+      <p>Coming soon.</p>
+    </div>
   </main>
+  <script>
+    const root = document.documentElement;
+    let queued = false;
+    function update() {
+      queued = false;
+      const p = Math.min(1, Math.max(0, scrollY / (innerHeight * 0.8)));
+      root.style.setProperty('--p', p);
+    }
+    addEventListener('scroll', () => {
+      if (!queued) { queued = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    addEventListener('resize', update);
+    update();
+  </script>
 </body>
 </html>
