@@ -174,11 +174,25 @@
       update();
     }
 
+    // Show the right view first, then scroll, so a jump from Articles lands in the right place
+    function go(hash) {
+      route();
+      if (hash === '#go-there') goThere.scrollIntoView();
+      else scrollTo(0, 0);
+    }
+
+    links.forEach(a => a.addEventListener('click', e => {
+      e.preventDefault();
+      const hash = a.getAttribute('href');
+      if (location.hash !== hash) history.pushState(null, '', hash);
+      go(hash);
+    }));
+
     addEventListener('scroll', () => {
       if (!queued) { queued = true; requestAnimationFrame(update); }
     }, { passive: true });
     addEventListener('resize', update);
-    addEventListener('hashchange', route);
+    addEventListener('popstate', () => go(location.hash));
     route();
   </script>
 </body>
